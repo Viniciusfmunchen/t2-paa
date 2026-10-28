@@ -7,6 +7,8 @@ import structures.ListaAdjacencia;
  * e Vetor Dinâmico de Arestas).
  */
 public class Grafo {
+    private static final int CAPACIDADE_INICIAL_ARESTAS = 20;
+
     private final int numVertices;
     private final boolean orientado;
     private final ListaAdjacencia[] adjacencias;
@@ -27,14 +29,13 @@ public class Grafo {
         for (int i = 0; i < numVertices; i++) {
             this.adjacencias[i] = new ListaAdjacencia();
         }
-        this.arestas = new Aresta[20];
+        this.arestas = new Aresta[CAPACIDADE_INICIAL_ARESTAS];
         this.numArestas = 0;
         this.possuiPesoNegativo = false;
     }
 
     /**
-     * Adiciona uma aresta mantendo a lista de adjacências ordenada em ordem
-     * crescente.
+     * Adiciona uma aresta mantendo a lista de adjacências ordenada em ordem crescente.
      * 
      * @param u    Vértice de origem.
      * @param v    Vértice de destino.
@@ -73,6 +74,19 @@ public class Grafo {
         for (int i = 0; i < numArestas; i++) {
             arestas[i].setDestacada(false);
         }
+    }
+
+    /**
+     * Obtém uma aresta pelo seu índice com checagem de limites.
+     *
+     * @param indice Posição da aresta (0 a numArestas - 1).
+     * @return Instância da Aresta.
+     */
+    public Aresta getAresta(int indice) {
+        if (indice < 0 || indice >= numArestas) {
+            throw new IndexOutOfBoundsException("Índice de aresta inválido: " + indice);
+        }
+        return arestas[indice];
     }
 
     public int getNumVertices() {

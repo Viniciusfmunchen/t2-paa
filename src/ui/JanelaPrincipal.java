@@ -9,37 +9,64 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Janela principal da aplicação (Java Swing) que coordena a interação do
  * usuário.
  */
 public class JanelaPrincipal extends JFrame {
+
     private Grafo grafoAtual;
     private final LeitorGrafoTxt leitorGrafo;
     private final ServicoAlgoritmosGrafo servicoAlgoritmos;
 
-    private final JLabel lblStatusArquivo;
-    private final JTextArea areaConsole;
-    private final PainelVisualizacaoGrafo painelGrafo;
-    private final JButton[] botoesAlgoritmos;
+    private JLabel lblStatusArquivo;
+    private JTextArea areaConsole;
+    private PainelVisualizacaoGrafo painelGrafo;
+    private final List<JButton> botoesAlgoritmos = new ArrayList<>();
 
-    /**
-     * Construtor que inicializa os componentes gráficos e os controladores.
-     */
     public JanelaPrincipal() {
         super("UNIOESTE - Projeto e Análise de Algoritmos - Algoritmos em Grafos");
         this.leitorGrafo = new LeitorGrafoTxt();
         this.servicoAlgoritmos = new ServicoAlgoritmosGrafo();
 
+        configurarJanela();
+        inicializarComponentes();
+    }
+
+    /**
+     * Configura propriedades da janela JFrame.
+     */
+    private void configurarJanela() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1100, 720);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(8, 8));
+    }
 
-        // Barra Superior: Carregamento do Grafo
+    /**
+     * Cria e distribui os painéis principais na janela.
+     */
+    private void inicializarComponentes() {
+        add(criarPainelSuperior(), BorderLayout.NORTH);
+        add(criarPainelMenu(), BorderLayout.WEST);
+
+        painelGrafo = new PainelVisualizacaoGrafo();
+        painelGrafo.setBorder(new TitledBorder("Visualização Gráfica do Grafo"));
+        add(painelGrafo, BorderLayout.CENTER);
+
+        add(criarPainelConsole(), BorderLayout.SOUTH);
+    }
+
+    /**
+     * Constrói a barra superior contendo botão de carregar e label de status.
+     */
+    private JPanel criarPainelSuperior() {
         JPanel painelTopo = new JPanel(new BorderLayout(10, 10));
         painelTopo.setBorder(new EmptyBorder(10, 10, 0, 10));
 
@@ -53,58 +80,68 @@ public class JanelaPrincipal extends JFrame {
 
         painelTopo.add(btnCarregar, BorderLayout.WEST);
         painelTopo.add(lblStatusArquivo, BorderLayout.CENTER);
-        add(painelTopo, BorderLayout.NORTH);
+        return painelTopo;
+    }
 
-        // Menu Lateral Esquerdo: Os 7 Algoritmos
+    /**
+     * Constrói o menu lateral esquerdo contendo os botões dos algoritmos.
+     */
+    private JPanel criarPainelMenu() {
         JPanel painelMenu = new JPanel(new GridLayout(7, 1, 8, 8));
         painelMenu.setBorder(new TitledBorder("Algoritmos Disponíveis"));
         painelMenu.setPreferredSize(new Dimension(280, 0));
 
-        JButton btnDesenhar = new JButton("a) Desenho de Grafo");
-        JButton btnDFS = new JButton("b) Busca em Profundidade (DFS)");
-        JButton btnBFS = new JButton("c) Busca em Largura (BFS)");
-        JButton btnTopologica = new JButton("d) Ordenação Topológica");
-        JButton btnCFC = new JButton("e) Comp. Fortemente Conexas");
-        JButton btnDijkstra = new JButton("f) Algoritmo de Dijkstra");
-        JButton btnKruskal = new JButton("g) Algoritmo de Kruskal (AGM)");
+        painelMenu.add(criarBotaoAlgoritmo("Desenhar grafo", e -> acaoDesenharGrafoPadrao()));
+        painelMenu.add(criarBotaoAlgoritmo("Busca em Profundidade (DFS)", e -> acaoExecutarBusca(true)));
+        painelMenu.add(criarBotaoAlgoritmo("Busca em Largura (BFS)", e -> acaoExecutarBusca(false)));
+        painelMenu.add(criarBotaoAlgoritmo("Ordenação Topológica", e -> acaoOrdenacaoTopologica()));
+        painelMenu.add(criarBotaoAlgoritmo("Comp. Fortemente Conexas", e -> acaoComponentesFortementeConexas()));
+        painelMenu.add(criarBotaoAlgoritmo("Algoritmo de Dijkstra", e -> acaoDijkstra()));
+        painelMenu.add(criarBotaoAlgoritmo("Algoritmo de Kruskal (AGM)", e -> acaoKruskal()));
 
-        botoesAlgoritmos = new JButton[] {
-                btnDesenhar, btnDFS, btnBFS, btnTopologica, btnCFC, btnDijkstra, btnKruskal
-        };
+        return painelMenu;
+    }
 
-        for (JButton btn : botoesAlgoritmos) {
-            btn.setEnabled(false); // Desabilitado até que o primeiro grafo seja carregado
-            btn.setFocusPainted(false);
-            painelMenu.add(btn);
-        }
+    /**
+     * Fábrica de botões para os algoritmos com estilo e estado inicial
+     * desabilitado.
+     */
+    private JButton criarBotaoAlgoritmo(String texto, ActionListener listener) {
+        JButton btn = new JButton(texto);
+        btn.setEnabled(false);
+        btn.setFocusPainted(false);
+        btn.addActionListener(listener);
+        botoesAlgoritmos.add(btn);
+        return btn;
+    }
 
-        btnDesenhar.addActionListener(e -> acaoDesenharGrafoPadrao());
-        btnDFS.addActionListener(e -> acaoExecutarBusca(true));
-        btnBFS.addActionListener(e -> acaoExecutarBusca(false));
-        btnTopologica.addActionListener(e -> acaoOrdenacaoTopologica());
-        btnCFC.addActionListener(e -> acaoComponentesFortementeConexas());
-        btnDijkstra.addActionListener(e -> acaoDijkstra());
-        btnKruskal.addActionListener(e -> acaoKruskal());
-
-        add(painelMenu, BorderLayout.WEST);
-
-        // Área Central: Visualizador Gráfico JGraphX
-        painelGrafo = new PainelVisualizacaoGrafo();
-        painelGrafo.setBorder(new TitledBorder("Visualização Gráfica Interativa (Arraste os vértices para ajustar)"));
-        add(painelGrafo, BorderLayout.CENTER);
-
-        // Área Inferior: Saída Padrão espelhada
+    /**
+     * Constrói a área inferior para exibição de texto dos resultados.
+     */
+    private JScrollPane criarPainelConsole() {
         areaConsole = new JTextArea(8, 50);
         areaConsole.setEditable(false);
         areaConsole.setFont(new Font("Monospaced", Font.PLAIN, 13));
         JScrollPane scrollConsole = new JScrollPane(areaConsole);
         scrollConsole.setBorder(new TitledBorder("Saída dos Algoritmos (Espelhado no System.out)"));
-        add(scrollConsole, BorderLayout.SOUTH);
+        return scrollConsole;
     }
 
     /**
-     * Abre o seletor de arquivos ou permite digitar o caminho para carregar um
-     * grafo.
+     * Habilita ou desabilita todos os botões de algoritmos.
+     */
+    private void setBotoesAlgoritmosHabilitados(boolean habilitado) {
+        for (JButton btn : botoesAlgoritmos) {
+            btn.setEnabled(habilitado);
+        }
+    }
+
+    // =========================================================================
+    // Ações dos Componentes e Execução dos Algoritmos
+    // =========================================================================
+
+    /**
+     * Abre o seletor de arquivos e carrega o grafo a partir do arquivo selecionado.
      */
     private void acaoCarregarGrafo() {
         JFileChooser fileChooser = new JFileChooser(new File("."));
@@ -119,10 +156,7 @@ public class JanelaPrincipal extends JFrame {
                         arquivo.getName(), grafoAtual.getNumVertices(), grafoAtual.getNumArestas(),
                         grafoAtual.isOrientado() ? "Sim" : "Não"));
 
-                for (JButton btn : botoesAlgoritmos) {
-                    btn.setEnabled(true);
-                }
-
+                setBotoesAlgoritmosHabilitados(true);
                 painelGrafo.renderizarGrafo(grafoAtual, null, false);
                 registrarSaida("Grafo carregado com sucesso: " + arquivo.getName());
             } catch (IOException ex) {
@@ -143,13 +177,14 @@ public class JanelaPrincipal extends JFrame {
 
     /**
      * b) e c) Solicita o vértice de origem e executa DFS ou BFS.
-     * 
+     *
      * @param isDfs true para Busca em Profundidade, false para Busca em Largura.
      */
     private void acaoExecutarBusca(boolean isDfs) {
         Integer origem = solicitarVerticeOrigem();
-        if (origem == null)
+        if (origem == null) {
             return;
+        }
 
         ResultadoAlgoritmo res = isDfs
                 ? servicoAlgoritmos.executarDFS(grafoAtual, origem)
@@ -179,14 +214,16 @@ public class JanelaPrincipal extends JFrame {
      * f) Valida aplicabilidade e executa o algoritmo de Dijkstra.
      */
     private void acaoDijkstra() {
-        if (!grafoAtual.isOrientado() || grafoAtual.isPossuiPesoNegativo()) {
-            ResultadoAlgoritmo res = servicoAlgoritmos.executarDijkstra(grafoAtual, 0);
-            tratarResultado(res, false);
+        String erroValidacao = servicoAlgoritmos.validarAplicabilidadeDijkstra(grafoAtual);
+        if (erroValidacao != null) {
+            tratarResultado(new ResultadoAlgoritmo(false, erroValidacao, null, false), false);
             return;
         }
+
         Integer origem = solicitarVerticeOrigem();
-        if (origem == null)
+        if (origem == null) {
             return;
+        }
 
         ResultadoAlgoritmo res = servicoAlgoritmos.executarDijkstra(grafoAtual, origem);
         tratarResultado(res, false);
@@ -202,7 +239,7 @@ public class JanelaPrincipal extends JFrame {
 
     /**
      * Exibe caixa de diálogo para o usuário informar o vértice inicial.
-     * 
+     *
      * @return Número do vértice válido ou null se cancelado/inválido.
      */
     private Integer solicitarVerticeOrigem() {
@@ -210,8 +247,9 @@ public class JanelaPrincipal extends JFrame {
                 "Informe o vértice de origem (0 a " + (grafoAtual.getNumVertices() - 1) + "):",
                 "Entrada de Parâmetro", JOptionPane.QUESTION_MESSAGE);
 
-        if (entrada == null)
+        if (entrada == null) {
             return null;
+        }
         try {
             return Integer.parseInt(entrada.trim());
         } catch (NumberFormatException e) {
@@ -223,7 +261,7 @@ public class JanelaPrincipal extends JFrame {
     /**
      * Processa o retorno do algoritmo, imprimindo na saída padrão, no painel
      * inferior e atualizando o desenho.
-     * 
+     *
      * @param res              Objeto de resultado.
      * @param atualizarDesenho Indica se o algoritmo altera as cores de vértices ou
      *                         arestas.
@@ -239,9 +277,9 @@ public class JanelaPrincipal extends JFrame {
     }
 
     /**
-     * Imprime simultaneamente na saída padrão (System.out) conforme exigido pelo
-     * edital e na área de texto da GUI.
-     * 
+     * Imprime simultaneamente na saída padrão (System.out) conforme exigido e na
+     * área de texto da GUI.
+     *
      * @param mensagem Texto a ser registrado.
      */
     private void registrarSaida(String mensagem) {

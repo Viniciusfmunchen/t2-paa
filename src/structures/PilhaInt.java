@@ -24,6 +24,9 @@ public class PilhaInt {
      * @param valor Identificador do vértice.
      */
     public void empilhar(int valor) {
+        if (estaCheia()) {
+            throw new IllegalStateException("Capacidade máxima da pilha excedida (" + dados.length + ").");
+        }
         dados[++topo] = valor;
     }
 
@@ -33,6 +36,9 @@ public class PilhaInt {
      * @return Identificador do vértice no topo.
      */
     public int desempilhar() {
+        if (estaVazia()) {
+            throw new IllegalStateException("Tentativa de desempilhar de uma pilha vazia.");
+        }
         return dados[topo--];
     }
 
@@ -43,5 +49,14 @@ public class PilhaInt {
      */
     public boolean estaVazia() {
         return topo == -1;
+    }
+
+    /**
+     * Indica se a pilha atingiu a capacidade máxima.
+     *
+     * @return true se cheia, false caso contrário.
+     */
+    public boolean estaCheia() {
+        return topo == dados.length - 1;
     }
 }

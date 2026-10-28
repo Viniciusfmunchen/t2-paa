@@ -28,6 +28,9 @@ public class FilaInt {
      * @param valor Identificador do vértice.
      */
     public void enfileirar(int valor) {
+        if (estaCheia()) {
+            throw new IllegalStateException("Capacidade máxima da fila excedida (" + dados.length + ").");
+        }
         tras = (tras + 1) % dados.length;
         dados[tras] = valor;
         tamanho++;
@@ -39,6 +42,9 @@ public class FilaInt {
      * @return Identificador do vértice removido.
      */
     public int desenfileirar() {
+        if (estaVazia()) {
+            throw new IllegalStateException("Tentativa de desenfileirar de uma fila vazia.");
+        }
         int valor = dados[frente];
         frente = (frente + 1) % dados.length;
         tamanho--;
@@ -52,5 +58,18 @@ public class FilaInt {
      */
     public boolean estaVazia() {
         return tamanho == 0;
+    }
+
+    /**
+     * Verifica se a fila atingiu a capacidade máxima.
+     *
+     * @return true se cheia, false caso contrário.
+     */
+    public boolean estaCheia() {
+        return tamanho == dados.length;
+    }
+
+    public int getTamanho() {
+        return tamanho;
     }
 }
