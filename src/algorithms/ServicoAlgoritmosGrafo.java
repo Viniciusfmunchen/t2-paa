@@ -3,76 +3,42 @@ package algorithms;
 import model.Grafo;
 
 /**
- * Fachada (Design Pattern Facade) que centraliza e unifica o acesso aos
- * algoritmos de grafos da aplicação.
- *
- * Cada algoritmo possui sua própria classe especializada e encapsulada no pacote
- * {@code algorithms}.
+ * Fachada (Facade) que centraliza e unifica o acesso aos algoritmos de grafos.
  */
 public class ServicoAlgoritmosGrafo {
 
-    private final AlgoritmoDFS algoritmoDFS;
-    private final AlgoritmoBFS algoritmoBFS;
-    private final AlgoritmoOrdenacaoTopologica algoritmoTopologico;
-    private final AlgoritmoKosaraju algoritmoKosaraju;
-    private final AlgoritmoDijkstra algoritmoDijkstra;
-    private final AlgoritmoKruskal algoritmoKruskal;
+    private final AlgoritmoDFS dfs = new AlgoritmoDFS();
+    private final AlgoritmoBFS bfs = new AlgoritmoBFS();
+    private final AlgoritmoOrdenacaoTopologica topologico = new AlgoritmoOrdenacaoTopologica();
+    private final AlgoritmoKosaraju kosaraju = new AlgoritmoKosaraju();
+    private final AlgoritmoDijkstra dijkstra = new AlgoritmoDijkstra();
+    private final AlgoritmoKruskal kruskal = new AlgoritmoKruskal();
 
-    public ServicoAlgoritmosGrafo() {
-        this.algoritmoDFS = new AlgoritmoDFS();
-        this.algoritmoBFS = new AlgoritmoBFS();
-        this.algoritmoTopologico = new AlgoritmoOrdenacaoTopologica();
-        this.algoritmoKosaraju = new AlgoritmoKosaraju();
-        this.algoritmoDijkstra = new AlgoritmoDijkstra();
-        this.algoritmoKruskal = new AlgoritmoKruskal();
+    public ResultadoAlgoritmo executarDFS(Grafo g, int origem) {
+        return dfs.executar(g, origem);
     }
 
-    /**
-     * b) Executa a Busca em Profundidade (DFS).
-     */
-    public ResultadoAlgoritmo executarDFS(Grafo grafo, int origem) {
-        return algoritmoDFS.executar(grafo, origem);
+    public ResultadoAlgoritmo executarBFS(Grafo g, int origem) {
+        return bfs.executar(g, origem);
     }
 
-    /**
-     * c) Executa a Busca em Largura (BFS).
-     */
-    public ResultadoAlgoritmo executarBFS(Grafo grafo, int origem) {
-        return algoritmoBFS.executar(grafo, origem);
+    public ResultadoAlgoritmo executarOrdenacaoTopologica(Grafo g) {
+        return topologico.executar(g);
     }
 
-    /**
-     * d) Executa a Ordenação Topológica.
-     */
-    public ResultadoAlgoritmo executarOrdenacaoTopologica(Grafo grafo) {
-        return algoritmoTopologico.executar(grafo);
+    public ResultadoAlgoritmo executarComponentesFortementeConexas(Grafo g) {
+        return kosaraju.executar(g);
     }
 
-    /**
-     * e) Executa Componentes Fortemente Conexas (Kosaraju).
-     */
-    public ResultadoAlgoritmo executarComponentesFortementeConexas(Grafo grafo) {
-        return algoritmoKosaraju.executar(grafo);
+    public String validarAplicabilidadeDijkstra(Grafo g) {
+        return dijkstra.validarAplicabilidade(g);
     }
 
-    /**
-     * Valida os pré-requisitos para execução do Dijkstra.
-     */
-    public String validarAplicabilidadeDijkstra(Grafo grafo) {
-        return algoritmoDijkstra.validarAplicabilidade(grafo);
+    public ResultadoAlgoritmo executarDijkstra(Grafo g, int origem) {
+        return dijkstra.executar(g, origem);
     }
 
-    /**
-     * f) Executa o algoritmo de caminhos mínimos de Dijkstra.
-     */
-    public ResultadoAlgoritmo executarDijkstra(Grafo grafo, int origem) {
-        return algoritmoDijkstra.executar(grafo, origem);
-    }
-
-    /**
-     * g) Executa o algoritmo de Kruskal para Árvore Geradora Mínima (AGM).
-     */
-    public ResultadoAlgoritmo executarKruskal(Grafo grafo) {
-        return algoritmoKruskal.executar(grafo);
+    public ResultadoAlgoritmo executarKruskal(Grafo g) {
+        return kruskal.executar(g);
     }
 }

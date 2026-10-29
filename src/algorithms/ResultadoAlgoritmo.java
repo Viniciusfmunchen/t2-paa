@@ -1,8 +1,7 @@
 package algorithms;
 
 /**
- * Objeto de transferência de dados (DTO) que encapsula o resultado da execução
- * de um algoritmo.
+ * Encapsula o resultado da execução de um algoritmo de grafo.
  */
 public class ResultadoAlgoritmo {
     private final boolean sucesso;
@@ -10,22 +9,33 @@ public class ResultadoAlgoritmo {
     private final String[] coresVertices;
     private final boolean destacarArestasAgm;
 
-    /**
-     * Construtor do resultado do algoritmo.
-     * 
-     * @param sucesso            Indica se o algoritmo pôde ser aplicado ao grafo.
-     * @param textoSaida         Texto formatado segundo o padrão exigido pelo
-     *                           trabalho.
-     * @param coresVertices      Cores atribuídas a cada vértice (usado em
-     *                           Componentes Fortemente Conexas).
-     * @param destacarArestasAgm Indica se as arestas marcadas devem ser destacadas
-     *                           (usado em Kruskal).
-     */
     public ResultadoAlgoritmo(boolean sucesso, String textoSaida, String[] coresVertices, boolean destacarArestasAgm) {
         this.sucesso = sucesso;
         this.textoSaida = textoSaida;
         this.coresVertices = coresVertices;
         this.destacarArestasAgm = destacarArestasAgm;
+    }
+
+    public static ResultadoAlgoritmo sucesso(String textoSaida) {
+        return new ResultadoAlgoritmo(true, textoSaida, null, false);
+    }
+
+    public static ResultadoAlgoritmo erro(String mensagem) {
+        return new ResultadoAlgoritmo(false, mensagem, null, false);
+    }
+
+    /**
+     * Formata uma sequência de vértices no padrão exigido: "u - v - w".
+     */
+    public static String formatarSequencia(int[] vetor, int tam) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < tam; i++) {
+            sb.append(vetor[i]);
+            if (i < tam - 1) {
+                sb.append(" - ");
+            }
+        }
+        return sb.toString();
     }
 
     public boolean isSucesso() {

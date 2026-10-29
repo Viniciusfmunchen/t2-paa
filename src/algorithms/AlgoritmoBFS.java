@@ -6,22 +6,17 @@ import structures.NoAdjacencia;
 
 /**
  * Implementação da Busca em Largura (BFS).
- * Garante a exploração em camadas e a cobertura de todas as componentes conexas.
+ * Explora todos os vértices do grafo em camadas, mesmo se desconexo.
  */
 public class AlgoritmoBFS {
 
     /**
-     * Executa a Busca em Largura a partir do vértice de origem informado.
-     *
-     * @param grafo  Grafo a ser percorrido.
-     * @param origem Vértice inicial.
-     * @return Resultado contendo a sequência de visitação formatada com hifens.
+     * Executa a BFS a partir da origem informada.
      */
     public ResultadoAlgoritmo executar(Grafo grafo, int origem) {
         int n = grafo.getNumVertices();
         if (origem < 0 || origem >= n) {
-            return new ResultadoAlgoritmo(false, "Erro: O vértice de origem deve estar entre 0 e " + (n - 1) + ".",
-                    null, false);
+            return ResultadoAlgoritmo.erro("Erro: O vértice de origem deve estar entre 0 e " + (n - 1) + ".");
         }
 
         boolean[] visitado = new boolean[n];
@@ -29,24 +24,18 @@ public class AlgoritmoBFS {
         int contador = 0;
         FilaInt fila = new FilaInt(n);
 
-        // Explora a componente conectada a partir da origem informada
-        contador = explorarComponenteBFS(grafo, origem, visitado, ordem, contador, fila);
+        contador = explorarComponente(grafo, origem, visitado, ordem, contador, fila);
 
-        // Garante a exploração de eventuais componentes desconexas
         for (int i = 0; i < n; i++) {
             if (!visitado[i]) {
-                contador = explorarComponenteBFS(grafo, i, visitado, ordem, contador, fila);
+                contador = explorarComponente(grafo, i, visitado, ordem, contador, fila);
             }
         }
 
-        String saida = formatarSequenciaHifen(ordem, contador);
-        return new ResultadoAlgoritmo(true, saida, null, false);
+        return ResultadoAlgoritmo.sucesso(ResultadoAlgoritmo.formatarSequencia(ordem, contador));
     }
 
-    /**
-     * Explora em largura uma única componente conexa a partir de um vértice inicial.
-     */
-    private int explorarComponenteBFS(Grafo grafo, int inicio, boolean[] visitado, int[] ordem, int contador, FilaInt fila) {
+    private int explorarComponente(Grafo grafo, int inicio, boolean[] visitado, int[] ordem, int contador, FilaInt fila) {
         visitado[inicio] = true;
         fila.enfileirar(inicio);
 
@@ -64,19 +53,6 @@ public class AlgoritmoBFS {
                 atual = atual.getProximo();
             }
         }
-
         return contador;
     }
-
-    private String formatarSequenciaHifen(int[] vetor, int tam) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < tam; i++) {
-            sb.append(vetor[i]);
-            if (i < tam - 1) {
-                sb.append("-");
-            }
-        }
-        return sb.toString();
-    }
 }
-

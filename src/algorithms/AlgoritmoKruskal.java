@@ -5,21 +5,16 @@ import model.Grafo;
 import structures.UnionFind;
 
 /**
- * Implementação do Algoritmo de Kruskal para Árvore Geradora Mínima (AGM)
- * em grafos não-orientados, utilizando Union-Find com compressão de caminho e rank.
+ * Algoritmo de Kruskal para Árvore Geradora Mínima (AGM) em grafos não-orientados.
  */
 public class AlgoritmoKruskal {
 
     /**
      * Executa o algoritmo de Kruskal e identifica as arestas que compõem a AGM.
-     *
-     * @param grafo Grafo não-orientado.
-     * @return Resultado contendo o peso total, a lista de arestas e flag para destaque visual.
      */
     public ResultadoAlgoritmo executar(Grafo grafo) {
         if (grafo.isOrientado()) {
-            return new ResultadoAlgoritmo(false,
-                    "Algoritmo não aplicável: O algoritmo de Kruskal exige um grafo não-orientado.", null, false);
+            return ResultadoAlgoritmo.erro("Algoritmo não aplicável: O algoritmo de Kruskal exige grafo não-orientado.");
         }
 
         grafo.limparDestaquesArestas();
@@ -31,8 +26,15 @@ public class AlgoritmoKruskal {
             ordenadas[i] = grafo.getArestas()[i];
         }
 
-        // Ordena as arestas por peso em ordem não-decrescente
-        ordenarArestasPorPeso(ordenadas, m);
+        for (int i = 0; i < m - 1; i++) {
+            for (int j = 0; j < m - 1 - i; j++) {
+                if (ordenadas[j].getPeso() > ordenadas[j + 1].getPeso()) {
+                    Aresta tmp = ordenadas[j];
+                    ordenadas[j] = ordenadas[j + 1];
+                    ordenadas[j + 1] = tmp;
+                }
+            }
+        }
 
         UnionFind uf = new UnionFind(n);
         Aresta[] agm = new Aresta[n];
@@ -48,36 +50,15 @@ public class AlgoritmoKruskal {
             }
         }
 
-        String saida = formatarSaidaKruskal(pesoTotal, agm, qtdAgm);
-        return new ResultadoAlgoritmo(true, saida, null, true);
-    }
-
-    /**
-     * Ordena as arestas por peso em ordem não-decrescente.
-     */
-    private void ordenarArestasPorPeso(Aresta[] arestas, int total) {
-        for (int i = 0; i < total - 1; i++) {
-            for (int j = 0; j < total - 1 - i; j++) {
-                if (arestas[j].getPeso() > arestas[j + 1].getPeso()) {
-                    Aresta tmp = arestas[j];
-                    arestas[j] = arestas[j + 1];
-                    arestas[j + 1] = tmp;
-                }
-            }
-        }
-    }
-
-    private String formatarSaidaKruskal(int pesoTotal, Aresta[] agm, int qtdAgm) {
         StringBuilder sb = new StringBuilder();
-        sb.append("peso total: ").append(pesoTotal).append("\n");
-        sb.append("arestas: ");
+        sb.append("peso total:  ").append(pesoTotal).append("\narestas:  ");
         for (int i = 0; i < qtdAgm; i++) {
             sb.append("(").append(agm[i].getU()).append(",").append(agm[i].getV()).append(")");
             if (i < qtdAgm - 1) {
                 sb.append(" ");
             }
         }
-        return sb.toString();
+
+        return new ResultadoAlgoritmo(true, sb.toString(), null, true);
     }
 }
-
