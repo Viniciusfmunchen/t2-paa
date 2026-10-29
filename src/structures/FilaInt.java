@@ -1,8 +1,8 @@
 package structures;
 
 /**
- * Estrutura de dados Fila circular (FIFO) implementada do zero para a Busca em
- * Largura (BFS).
+ * Estrutura de dados de fila circular sequencial (FIFO) para numeros inteiros,
+ * utilizada na execucao de algoritmos como a Busca em Largura (BFS).
  */
 public class FilaInt {
     private final int[] dados;
@@ -11,9 +11,12 @@ public class FilaInt {
     private int tamanho;
 
     /**
-     * Inicializa a fila com uma capacidade fixa.
-     * 
-     * @param capacidade Número máximo de elementos suportados.
+     * Construtor da fila circular com capacidade definida.
+     *
+     * Pré-condição: capacidade deve ser um numero inteiro maior que zero.
+     * Pós-condição: Uma fila circular vazia e criada para armazenar ate capacidade elementos.
+     *
+     * @param capacidade Quantidade maxima de elementos suportados pela fila.
      */
     public FilaInt(int capacidade) {
         this.dados = new int[capacidade];
@@ -23,9 +26,13 @@ public class FilaInt {
     }
 
     /**
-     * Adiciona um vértice no final da fila.
-     * 
-     * @param valor Identificador do vértice.
+     * Insere um novo valor no final da fila.
+     *
+     * Pré-condição: A fila nao deve estar cheia.
+     * Pós-condição: O elemento e inserido na posicao de final da fila e o tamanho e incrementado em 1.
+     *
+     * @param valor Valor inteiro a ser inserido na fila.
+     * @throws IllegalStateException Se a fila ja estiver cheia.
      */
     public void enfileirar(int valor) {
         if (estaCheia()) {
@@ -37,9 +44,13 @@ public class FilaInt {
     }
 
     /**
-     * Remove e retorna o vértice na frente da fila.
-     * 
-     * @return Identificador do vértice removido.
+     * Remove e retorna o valor posicionado na frente da fila.
+     *
+     * Pré-condição: A fila nao deve estar vazia.
+     * Pós-condição: O elemento da frente e removido e retornado, e o tamanho da fila e decrementado em 1.
+     *
+     * @return O valor inteiro removido da frente da fila.
+     * @throws IllegalStateException Se a fila estiver vazia.
      */
     public int desenfileirar() {
         if (estaVazia()) {
@@ -52,23 +63,37 @@ public class FilaInt {
     }
 
     /**
-     * Verifica se a fila não possui elementos.
-     * 
-     * @return true se vazia, false caso contrário.
+     * Verifica se a fila esta sem nenhum elemento.
+     *
+     * Pré-condição: A fila deve estar instanciada.
+     * Pós-condição: Retorna true se a fila estiver vazia e false caso contrario.
+     *
+     * @return true se a fila estiver vazia, false caso contrario.
      */
     public boolean estaVazia() {
         return tamanho == 0;
     }
 
     /**
-     * Verifica se a fila atingiu a capacidade máxima.
+     * Verifica se a fila atingiu a sua capacidade maxima.
      *
-     * @return true se cheia, false caso contrário.
+     * Pré-condição: A fila deve estar instanciada.
+     * Pós-condição: Retorna true se a fila estiver cheia e false caso contrario.
+     *
+     * @return true se a fila estiver cheia, false caso contrario.
      */
     public boolean estaCheia() {
         return tamanho == dados.length;
     }
 
+    /**
+     * Obtem o numero atual de elementos armazenados na fila.
+     *
+     * Pré-condição: A fila deve estar instanciada.
+     * Pós-condição: Retorna o total de elementos enfileirados sem modificar a fila.
+     *
+     * @return Quantidade de elementos na fila.
+     */
     public int getTamanho() {
         return tamanho;
     }

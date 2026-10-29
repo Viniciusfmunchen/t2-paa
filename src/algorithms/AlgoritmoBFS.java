@@ -5,13 +5,25 @@ import structures.FilaInt;
 import structures.NoAdjacencia;
 
 /**
- * Implementação da Busca em Largura (BFS).
- * Explora todos os vértices do grafo em camadas, mesmo se desconexo.
+ * Implementacao do algoritmo de Busca em Largura (BFS - Breadth-First Search).
+ * Explora os vertices em camadas a partir de um vertice de origem, cobrindo
+ * todo o grafo mesmo se desconexo.
  */
 public class AlgoritmoBFS {
+    
+    public AlgoritmoBFS() {
+    }
 
     /**
-     * Executa a BFS a partir da origem informada.
+     * Executa a Busca em Largura a partir do vertice de origem especificado.
+     *
+     * Pré-condição: grafo nao deve ser nulo e origem deve estar no intervalo [0, grafo.getNumVertices() - 1].
+     * Pós-condição: Retorna o resultado com a ordem de visitacao formatada no padrao "u - v - w",
+     * explorando a componente da origem e as eventuais componentes desconexas.
+     *
+     * @param grafo  Grafo a ser percorrido.
+     * @param origem Vertice de inicio da exploracao.
+     * @return ResultadoAlgoritmo contendo a sequencia de visitacao ou mensagem de erro se a origem for invalida.
      */
     public ResultadoAlgoritmo executar(Grafo grafo, int origem) {
         int n = grafo.getNumVertices();
@@ -35,6 +47,20 @@ public class AlgoritmoBFS {
         return ResultadoAlgoritmo.sucesso(ResultadoAlgoritmo.formatarSequencia(ordem, contador));
     }
 
+    /**
+     * Explora em largura uma unica componente conexa a partir de um vertice inicial usando fila circular.
+     *
+     * Pré-condição: grafo, visitado, ordem e fila nao devem ser nulos; inicio deve ser um vertice nao visitado.
+     * Pós-condição: Todos os vertices alcancaveis a partir de inicio sao marcados como visitados e registrados em ordem.
+     *
+     * @param grafo    Grafo sob analise.
+     * @param inicio   Vertice de partida da componente.
+     * @param visitado Arranjo de sinalizacao de vertices visitados.
+     * @param ordem    Arranjo de registro da ordem de visitacao.
+     * @param contador Quantidade atual de vertices inseridos no vetor de ordem.
+     * @param fila     Fila circular utilizada para controle da exploracao em camadas.
+     * @return O novo total de vertices registrados no vetor de ordem.
+     */
     private int explorarComponente(Grafo grafo, int inicio, boolean[] visitado, int[] ordem, int contador, FilaInt fila) {
         visitado[inicio] = true;
         fila.enfileirar(inicio);

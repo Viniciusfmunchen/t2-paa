@@ -1,17 +1,21 @@
 package structures;
 
 /**
- * Estrutura Union-Find (Conjuntos Disjuntos) com compressão de caminho e união
- * por rank.
+ * Estrutura de dados para Conjuntos Disjuntos (Union-Find),
+ * implementada com compressao de caminho e uniao por rank,
+ * empregada no algoritmo de Kruskal.
  */
 public class UnionFind {
     private final int[] pai;
     private final int[] rank;
 
     /**
-     * Inicializa N conjuntos disjuntos unitários.
-     * 
-     * @param n Quantidade de vértices do grafo.
+     * Construtor da estrutura Union-Find.
+     *
+     * Pré-condição: n deve ser um inteiro maior que zero correspondente ao total de elementos.
+     * Pós-condição: Sao inicializados n conjuntos disjuntos unitarios com rank 0 onde cada elemento e seu proprio pai.
+     *
+     * @param n Quantidade total de elementos ou vertices.
      */
     public UnionFind(int n) {
         this.pai = new int[n];
@@ -23,11 +27,14 @@ public class UnionFind {
     }
 
     /**
-     * Localiza o representante canônico do conjunto que contém o elemento
-     * informado.
-     * 
-     * @param i Vértice consultado.
-     * @return Representante do conjunto.
+     * Localiza o representante canonico do conjunto contendo o elemento especificado,
+     * aplicando compressao de caminho.
+     *
+     * Pré-condição: i deve ser um indice valido no intervalo [0, n - 1].
+     * Pós-condição: Retorna a raiz do conjunto e atualiza os ponteiros do caminho diretamente para a raiz.
+     *
+     * @param i Identificador do elemento a ser consultado.
+     * @return O identificador da raiz representativa do conjunto.
      */
     public int encontrar(int i) {
         if (pai[i] != i) {
@@ -37,17 +44,23 @@ public class UnionFind {
     }
 
     /**
-     * Une os conjuntos de dois vértices caso pertençam a componentes distintas.
-     * 
-     * @param x Primeiro vértice.
-     * @param y Segundo vértice.
-     * @return true se a união ocorreu, false se já pertenciam ao mesmo conjunto.
+     * Realiza a uniao entre os conjuntos disjuntos contendo os elementos informados,
+     * baseando-se no rank das raizes.
+     *
+     * Pré-condição: x e y devem ser indices validos no intervalo [0, n - 1].
+     * Pós-condição: Se pertencerem a conjuntos distintos, as raizes sao unificadas pelo rank e retorna true;
+     * caso ja pertencam ao mesmo conjunto, nada e alterado e retorna false.
+     *
+     * @param x Primeiro elemento.
+     * @param y Segundo elemento.
+     * @return true se dois conjuntos distintos foram unidos, false se ja pertenciam ao mesmo conjunto.
      */
     public boolean unir(int x, int y) {
         int raizX = encontrar(x);
         int raizY = encontrar(y);
-        if (raizX == raizY)
+        if (raizX == raizY) {
             return false;
+        }
 
         if (rank[raizX] < rank[raizY]) {
             pai[raizX] = raizY;

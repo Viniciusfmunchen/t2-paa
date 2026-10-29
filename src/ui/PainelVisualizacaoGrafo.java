@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Painel Swing responsável pela renderização gráfica do grafo com JGraphX.
+ * Painel Swing dedicado a renderizacao grafica e espacial de grafos atraves da biblioteca JGraphX,
+ * suportando coloracao customizada de vertices e destaque de arestas da AGM.
  */
 public class PainelVisualizacaoGrafo extends JPanel {
 
@@ -38,10 +39,26 @@ public class PainelVisualizacaoGrafo extends JPanel {
     private static final double MARGEM = 35.0;
     private static final double ESPACAMENTO = 60.0;
 
+    /**
+     * Construtor do painel de visualizacao grafica do grafo.
+     *
+     * Pré-condição: Nenhuma.
+     * Pós-condição: O painel Swing e instanciado com layout BorderLayout.
+     */
     public PainelVisualizacaoGrafo() {
         setLayout(new BorderLayout());
     }
 
+    /**
+     * Constroi e renderiza a representacao visual do grafo com calculo de layout organico e empacotamento espacial.
+     *
+     * Pré-condição: grafo nao deve ser nulo.
+     * Pós-condição: Os elementos graficos anteriores sao removidos e a nova representacao do grafo e montada e exibida.
+     *
+     * @param grafo           Instancia do grafo a ser renderizado visualmente.
+     * @param coresVertices   Vetor com as cores hexadecimais para coloracao individual de vertices, ou null.
+     * @param destacarArestas true se as arestas selecionadas da AGM devem ser desenhadas com destaque visual.
+     */
     public void renderizarGrafo(Grafo grafo, String[] coresVertices, boolean destacarArestas) {
         removeAll();
 
@@ -80,6 +97,14 @@ public class PainelVisualizacaoGrafo extends JPanel {
         repaint();
     }
 
+    /**
+     * Configura o conjunto padrao de estilos visuais de vertices e arestas na folha de estilos do grafo.
+     *
+     * Pré-condição: graph nao deve ser nulo.
+     * Pós-condição: Os estilos visuais padrao de vertices e arestas sao registrados na folha de estilos do grafo.
+     *
+     * @param graph Objeto do grafo JGraphX cuja folha de estilos sera configurada.
+     */
     private void configurarEstilos(mxGraph graph) {
         mxStylesheet sheet = graph.getStylesheet();
 
@@ -101,6 +126,18 @@ public class PainelVisualizacaoGrafo extends JPanel {
         eStyle.put(mxConstants.STYLE_LABEL_BACKGROUNDCOLOR, "#FFFFFF");
     }
 
+    /**
+     * Insere as celulas visuais dos vertices no modelo do grafo JGraphX.
+     *
+     * Pré-condição: graph, parent e grafo nao devem ser nulos.
+     * Pós-condição: Retorna um vetor contendo as referencias para os vertices inseridos no modelo.
+     *
+     * @param graph  Grafo JGraphX receptor.
+     * @param parent Celula raiz pai do JGraphX.
+     * @param grafo  Grafo de dominio contendo a contagem de vertices.
+     * @param cores  Vetor de cores customizadas por vertice ou null.
+     * @return Vetor de objetos representando as celulas dos vertices criados.
+     */
     private Object[] inserirVertices(mxGraph graph, Object parent, Grafo grafo, String[] cores) {
         int n = grafo.getNumVertices();
         Object[] vertices = new Object[n];
@@ -112,6 +149,18 @@ public class PainelVisualizacaoGrafo extends JPanel {
         return vertices;
     }
 
+    /**
+     * Insere as conexoes visuais de arestas no modelo do grafo JGraphX.
+     *
+     * Pré-condição: graph, parent, grafo e vertices nao devem ser nulos.
+     * Pós-condição: As arestas sao criadas no modelo com os pesos formatados e estilos apropriados.
+     *
+     * @param graph    Grafo JGraphX receptor.
+     * @param parent   Celula raiz pai do JGraphX.
+     * @param grafo    Grafo de dominio contendo a colecao de arestas.
+     * @param vertices Vetor com as referencias para os vertices previamente inseridos.
+     * @param destacar true se as arestas selecionadas devem receber destaque visual.
+     */
     private void inserirArestas(mxGraph graph, Object parent, Grafo grafo, Object[] vertices, boolean destacar) {
         String seta = grafo.isOrientado() ? mxConstants.ARROW_CLASSIC : mxConstants.NONE;
         for (int i = 0; i < grafo.getNumArestas(); i++) {
@@ -128,10 +177,22 @@ public class PainelVisualizacaoGrafo extends JPanel {
         }
     }
 
+    /**
+     * Ajusta o posicionamento geometrico relativo das componentes conexas do grafo na tela,
+     * organizando-as em grade compacta para prevenir sobreposicoes espaciais.
+     *
+     * Pré-condição: graph, grafo e vertices nao devem ser nulos.
+     * Pós-condição: As coordenadas espaciais das celulas dos vertices no modelo JGraphX sao reposicionadas adequadamente.
+     *
+     * @param graph    Grafo JGraphX contendo as geometrias dos vertices.
+     * @param grafo    Grafo de dominio contendo a topologia de conexoes.
+     * @param vertices Arranjo das celulas dos vertices no JGraphX.
+     */
     private void ajustarComponentes(mxGraph graph, Grafo grafo, Object[] vertices) {
         int n = grafo.getNumVertices();
-        if (n == 0)
+        if (n == 0) {
             return;
+        }
 
         double menorDist = Double.MAX_VALUE;
         for (int i = 0; i < grafo.getNumArestas(); i++) {
@@ -213,6 +274,15 @@ public class PainelVisualizacaoGrafo extends JPanel {
         }
     }
 
+    /**
+     * Cria e encapsula o grafo renderizado em um componente visual mxGraphComponent.
+     *
+     * Pré-condição: graph nao deve ser nulo.
+     * Pós-condição: Retorna o componente visual configurado com fundo branco e dimensoes adequadas.
+     *
+     * @param graph Objeto do grafo JGraphX a ser encapsulado no componente Swing.
+     * @return O componente visual mxGraphComponent pronto para insercao no painel da interface.
+     */
     private mxGraphComponent criarComponente(mxGraph graph) {
         mxGraphComponent comp = new mxGraphComponent(graph);
         comp.setConnectable(false);
@@ -224,10 +294,21 @@ public class PainelVisualizacaoGrafo extends JPanel {
         return comp;
     }
 
+    /**
+     * Estrutura auxiliar interna para representar e calcular os limites geometricos de uma componente conexa.
+     */
     private static class Comp {
         final List<Integer> nos;
         double minX, minY, w, h;
 
+        /**
+         * Construtor da estrutura de dados da componente visual.
+         *
+         * Pré-condição: nos nao deve ser nulo.
+         * Pós-condição: Uma nova instancia descritora de componente e criada com a lista de nos associada.
+         *
+         * @param nos Lista de identificadores de vertices pertencentes a componente.
+         */
         Comp(List<Integer> nos) {
             this.nos = nos;
         }

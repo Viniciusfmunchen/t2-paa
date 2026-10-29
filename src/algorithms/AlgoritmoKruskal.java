@@ -5,12 +5,23 @@ import model.Grafo;
 import structures.UnionFind;
 
 /**
- * Algoritmo de Kruskal para Árvore Geradora Mínima (AGM) em grafos não-orientados.
+ * Algoritmo de Kruskal para determinacao da Arvore Geradora Minima (AGM)
+ * em grafos conexos nao-orientados ponderados.
  */
 public class AlgoritmoKruskal {
 
+    public AlgoritmoKruskal() {
+    }
+
     /**
-     * Executa o algoritmo de Kruskal e identifica as arestas que compõem a AGM.
+     * Executa o algoritmo de Kruskal determinando as arestas que compoem a Arvore Geradora Minima.
+     *
+     * Pré-condição: grafo nao deve ser nulo e deve ser nao-orientado.
+     * Pós-condição: Retorna o resultado com o peso total acumulado da AGM, a listagem das arestas
+     * selecionadas e sinaliza no objeto a ativacao do destaque grafico das arestas.
+     *
+     * @param grafo Grafo nao-orientado ponderado a ser processado.
+     * @return ResultadoAlgoritmo contendo o peso total, a relacao de arestas da AGM e a diretiva de destaque visual.
      */
     public ResultadoAlgoritmo executar(Grafo grafo) {
         if (grafo.isOrientado()) {

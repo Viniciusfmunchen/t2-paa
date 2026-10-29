@@ -1,18 +1,30 @@
 package structures;
 
 /**
- * Lista simplesmente encadeada que mantém os vértices adjacentes em estrita
- * ordem crescente.
+ * Lista simplesmente encadeada de adjacencias de um vertice, mantendo os nos
+ * vizinhos ordenados de forma estritamente crescente pelo indice de destino.
  */
 public class ListaAdjacencia {
     private NoAdjacencia cabeca;
 
     /**
-     * Insere um novo vértice adjacente garantindo a ordenação crescente pelo índice
-     * do vértice.
-     * 
-     * @param destino Vértice adjacente de destino.
-     * @param peso    Peso da aresta.
+     * Construtor da lista de adjacencia.
+     *
+     * Pré-condição: Nenhuma.
+     * Pós-condição: Uma lista de adjacencia vazia e instanciada com cabeca nula.
+     */
+    public ListaAdjacencia() {
+        this.cabeca = null;
+    }
+
+    /**
+     * Insere um novo vertice adjacente na lista encadeada mantendo a ordem crescente pelo indice de destino.
+     *
+     * Pré-condição: destino deve ser um indice de vertice valido.
+     * Pós-condição: Um novo no contendo destino e peso e inserido de forma ordenada na lista.
+     *
+     * @param destino Vertice adjacente de destino.
+     * @param peso    Peso associado a aresta.
      */
     public void inserirOrdenado(int destino, int peso) {
         NoAdjacencia novo = new NoAdjacencia(destino, peso);
@@ -29,6 +41,14 @@ public class ListaAdjacencia {
         }
     }
 
+    /**
+     * Obtem o primeiro no da lista encadeada de adjacencias.
+     *
+     * Pré-condição: A lista deve estar instanciada.
+     * Pós-condição: Retorna o no cabeca da lista sem altera-la.
+     *
+     * @return O primeiro NoAdjacencia da lista, ou null se a lista estiver vazia.
+     */
     public NoAdjacencia getCabeca() {
         return cabeca;
     }

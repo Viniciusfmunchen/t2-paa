@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Janela principal da aplicação (Java Swing) para visualização e execução de algoritmos.
+ * Janela grafica principal da aplicacao (desenvolvida com Java Swing),
+ * fornecendo controles interativos para carregamento de arquivos de grafo,
+ * execucao de algoritmos e visualizacao espacial e textual dos resultados.
  */
 public class JanelaPrincipal extends JFrame {
 
@@ -29,6 +31,13 @@ public class JanelaPrincipal extends JFrame {
     private PainelVisualizacaoGrafo painelGrafo;
     private final List<JButton> botoesAlgoritmos = new ArrayList<>();
 
+    /**
+     * Construtor da janela principal da aplicacao.
+     *
+     * Pré-condição: Nenhuma.
+     * Pós-condição: A janela principal e instanciada, dimensionada, centralizada na tela
+     * e seus componentes graficos sao inicializados.
+     */
     public JanelaPrincipal() {
         super("UNIOESTE - Projeto e Análise de Algoritmos - Algoritmos em Grafos");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -39,6 +48,12 @@ public class JanelaPrincipal extends JFrame {
         inicializarComponentes();
     }
 
+    /**
+     * Instancia, estiliza e posiciona os componentes da interface grafica na janela.
+     *
+     * Pré-condição: A janela deve estar em processo de construcao.
+     * Pós-condição: Os paineis superior, de menu lateral, de desenho e de console sao adicionados ao container.
+     */
     private void inicializarComponentes() {
         JPanel painelTopo = new JPanel(new BorderLayout(10, 10));
         painelTopo.setBorder(new EmptyBorder(10, 10, 0, 10));
@@ -82,6 +97,16 @@ public class JanelaPrincipal extends JFrame {
         add(scrollConsole, BorderLayout.SOUTH);
     }
 
+    /**
+     * Cria e padroniza um botao de comando para a lista de algoritmos.
+     *
+     * Pré-condição: texto e listener nao devem ser nulos.
+     * Pós-condição: Retorna o botao configurado, inicialmente desabilitado e registrado na lista de botoes.
+     *
+     * @param texto    Rotulo a ser exibido no botao.
+     * @param listener Acao disparada quando o usuario acionar o botao.
+     * @return O JButton configurado e adicionado a colecao de botoes.
+     */
     private JButton criarBotao(String texto, ActionListener listener) {
         JButton btn = new JButton(texto);
         btn.setEnabled(false);
@@ -91,6 +116,13 @@ public class JanelaPrincipal extends JFrame {
         return btn;
     }
 
+    /**
+     * Manipula o evento de selecao e leitura de arquivo texto contendo o grafo.
+     *
+     * Pré-condição: O usuario acionou a acao de carregar arquivo.
+     * Pós-condição: Se o arquivo for valido, o grafo e carregado na memoria,
+     * a barra de status e atualizada, os botoes sao habilitados e o grafo e renderizado.
+     */
     private void acaoCarregarGrafo() {
         File pastaInicial = new File("exemplos").isDirectory() ? new File("exemplos") : new File(".");
         JFileChooser chooser = new JFileChooser(pastaInicial);
@@ -112,12 +144,26 @@ public class JanelaPrincipal extends JFrame {
         }
     }
 
+    /**
+     * Restaura a visualizacao grafica padrao do grafo carregado, limpando coloracoes e destaques de arestas.
+     *
+     * Pré-condição: Deve haver um grafo carregado atualmente (grafoAtual != null).
+     * Pós-condição: O painel grafico e redesenhado sem coloracoes ou destaques de algoritmos.
+     */
     private void acaoDesenharPadrao() {
         grafoAtual.limparDestaquesArestas();
         painelGrafo.renderizarGrafo(grafoAtual, null, false);
         registrarSaida("=== Desenho de Grafo ===\nDesenho padrão do grafo atualizado na tela.");
     }
 
+    /**
+     * Executa o algoritmo de busca (DFS ou BFS) apos solicitar o vertice de origem ao usuario.
+     *
+     * Pré-condição: grafoAtual nao deve ser nulo.
+     * Pós-condição: Se a origem informada for valida, o algoritmo correspondente e executado e a saida exibida no console.
+     *
+     * @param isDfs true para executar Busca em Profundidade (DFS), false para Busca em Largura (BFS).
+     */
     private void acaoBusca(boolean isDfs) {
         Integer origem = solicitarOrigem();
         if (origem != null) {
@@ -127,6 +173,12 @@ public class JanelaPrincipal extends JFrame {
         }
     }
 
+    /**
+     * Executa o algoritmo de Dijkstra apos validacao de compatibilidade e solicitacao do vertice de partida.
+     *
+     * Pré-condição: grafoAtual nao deve ser nulo.
+     * Pós-condição: Se aplicavel e com origem valida, executa o calculo de caminhos minimos e exibe o relatorio.
+     */
     private void acaoDijkstra() {
         String erro = servico.validarAplicabilidadeDijkstra(grafoAtual);
         if (erro != null) {
@@ -139,11 +191,21 @@ public class JanelaPrincipal extends JFrame {
         }
     }
 
+    /**
+     * Apresenta uma caixa de dialogo solicitando o vertice de origem ao usuario.
+     *
+     * Pré-condição: grafoAtual deve estar instanciado.
+     * Pós-condição: Retorna o valor inteiro digitado pelo usuario ou null caso a operacao seja cancelada ou invalida.
+     *
+     * @return O vertice de origem informado pelo usuario, ou null caso cancelado ou invalido.
+     */
     private Integer solicitarOrigem() {
         String entrada = JOptionPane.showInputDialog(this,
                 "Informe o vértice de origem (0 a " + (grafoAtual.getNumVertices() - 1) + "):",
                 "Entrada de Parâmetro", JOptionPane.QUESTION_MESSAGE);
-        if (entrada == null) return null;
+        if (entrada == null) {
+            return null;
+        }
         try {
             return Integer.parseInt(entrada.trim());
         } catch (NumberFormatException e) {
@@ -152,6 +214,17 @@ public class JanelaPrincipal extends JFrame {
         }
     }
 
+    /**
+     * Processa e direciona o resultado de um algoritmo, emitindo saidas no console e alertas ou redesenho visual.
+     *
+     * Pré-condição: nomeAlgoritmo e res nao devem ser nulos.
+     * Pós-condição: A saida e registrada no console e no terminal; se houver erro, exibe dialogo de aviso;
+     * se houver sucesso e solicitacao de atualizacao visual, re-renderiza o painel com as novas cores/destaques.
+     *
+     * @param nomeAlgoritmo    Titulo descritivo do algoritmo executado.
+     * @param res              Instancia contendo os dados do resultado produzido.
+     * @param atualizarDesenho true se o grafo visual deve ser atualizado na interface, false caso contrario.
+     */
     private void tratarResultado(String nomeAlgoritmo, ResultadoAlgoritmo res, boolean atualizarDesenho) {
         String cabecalho = "=== " + nomeAlgoritmo + " ===";
         registrarSaida(cabecalho + "\n" + res.getTextoSaida());
@@ -162,6 +235,14 @@ public class JanelaPrincipal extends JFrame {
         }
     }
 
+    /**
+     * Registra simultaneamente uma mensagem de texto na saida padrao do terminal e na area de console da interface Swing.
+     *
+     * Pré-condição: msg nao deve ser nula.
+     * Pós-condição: A mensagem e enviada ao System.out e anexada ao console grafico com rolagem automatica.
+     *
+     * @param msg Texto a ser registrado.
+     */
     private void registrarSaida(String msg) {
         System.out.println(msg);
         areaConsole.append(msg + "\n--------------------------------------------------\n");
